@@ -5,22 +5,21 @@ use lib '../lib';
 
 use strict;
 use warnings;
-
-use String::FilenameStatic qw(get_path get_filename);
+use File::Spec::Functions qw( catdir );
+use String::FilenameStatic qw(get_path get_file);
 
 
 use Test::More tests => 2;
 
 
 
-my $s = '/this/is/a/path/.any_file.html';
+
+my $s = catdir('this','is','a','path','.any_file.html');
 
 
+is( get_path($s), catdir('this','is','a','path'), 'get_path' );
 
-is( get_path($s), '/this/is/a/path', 'get_path' );
-
-is( get_filename($s), '.any_file', 'get_filename' );
-
+is( get_file($s), '.any_file.html', 'get_file' );
 
 
 1;

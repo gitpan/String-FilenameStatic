@@ -1,13 +1,17 @@
 package String::FilenameStatic; ## Static functions to manipulate a filename and path.
 
 
-our $VERSION='0.01';
+our $VERSION='0.02';
 
 
 use strict;
 
 use vars qw(@ISA @EXPORT %EXPORT_TAGS $VERSION);
 use Exporter; 
+use File::Spec::Functions qw( catdir splitdir );
+use File::Util qw( SL );
+
+
 
 @ISA = qw(Exporter);
 
@@ -57,15 +61,12 @@ Exporter::export_ok_tags('all');
 sub get_path{ # $string ($string)
 my $p=shift;
 
-	if ($p=~ m/\//){
-		$p=~ s/(.*)\/(.*)$/$1/;
-	}else{
-		if ($p=~ m/^\.*$/){ # only ".."
-			$p=$p; ## nothing to do
-		}else{
-			$p='';
-		}
-	}
+    my @p = splitdir( $p );
+
+    pop @p;
+    
+    $p = catdir( @p );
+        
 
 return $p;
 }
@@ -80,10 +81,13 @@ return $p;
 sub get_file{ # $string ($string)
 my $p=shift;
 
-	
-	$p=~ s/(.*)\/(.*)$/$2/;
+    my @p = splitdir( $p );
 
-return $p;
+    my $file = pop @p;
+    
+	
+
+return $file;
 }
 
 
@@ -95,8 +99,12 @@ return $p;
 sub remove_trailing_slash{ # $string ($string)
 my $p=shift;
 
-	$p=~ s/\/$//;
+    my $sl = SL();
 
+	$p=~ s/\Q$sl\E$//;
+
+    
+    
 return $p;
 }
 
@@ -104,7 +112,7 @@ return $p;
 
 # Extracts the extension of a filename
 #
-#  print get_filename('/etc/webserver/httpd.conf');
+#  print get_file_extension('/etc/webserver/httpd.conf');
 #  # writes: 'conf'
 #
 sub get_file_extension{ # $string ($string)
@@ -190,7 +198,7 @@ Extracts the whole filename without the path
 
 Extracts the extension of a filename
 
- print get_filename('/etc/webserver/httpd.conf');
+ print get_file_extension('/etc/webserver/httpd.conf');
  # writes: 'conf'
 
 
